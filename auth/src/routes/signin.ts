@@ -47,7 +47,7 @@ router.post('/api/users/signin',
 
         //store it on session object
 
-        res.status(201).send(existingUser)
+        res.status(200).send(existingUser)
 });
 
 export { router as signinRouter };
