@@ -17,3 +17,10 @@ spec:
                 name: auth-srv  # Correct field for service name
                 port:
                   number: 3000  # Correct field for service port
+          - path: /?(.*)
+            pathType: ImplementationSpecific  # ✅ Required
+            backend:
+              service:
+                name: client-srv              # ✅ New syntax
+                port:
+                  number: 3000
