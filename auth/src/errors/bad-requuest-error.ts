@@ -13,3 +13,4 @@ export class BadRequestError  extends CustomError{
         return [{ message: this.message}]
     }
 }
+//I just wanted to keep up on the streak
