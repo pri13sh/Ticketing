@@ -2,9 +2,8 @@ import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { body } from 'express-validator';
 import { User } from '../models/user';
-import { BadRequestError } from '../errors/bad-requuest-error';
+import { BadRequestError,validateRequest } from '@pri13sh/common';
 import { server } from 'typescript';
-import { validateRequest } from '../middlewares/validate-request';
 const router = express.Router();
 
 router.post('/api/users/signup',
