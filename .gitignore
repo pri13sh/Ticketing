@@ -1,4 +1,18 @@
+# Node modules
+node_modules/
+*/node_modules/
+*/*/node_modules/
+
+# Next.js
+.client/.next/
+client/.next/
+
+# Build directories
+common/build/
+*/build/
+
+# Specific paths
 /auth/node_modules/
 /client/node_modules/
-/client/.next
-/common/build
+/common/build/
+/tickets/node_modules/
