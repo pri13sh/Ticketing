@@ -17,6 +17,13 @@ spec:
                 name: auth-srv  # Correct field for service name
                 port:
                   number: 3000  # Correct field for service port
+          - path: /api/tickets/?(.*)
+            pathType: ImplementationSpecific  # Required in the new version
+            backend:
+              service:
+                name: tickets-srv  # Correct field for service name
+                port:
+                  number: 3000  # Correct field for service port
           - path: /?(.*)
             pathType: ImplementationSpecific  # ✅ Required
             backend:
