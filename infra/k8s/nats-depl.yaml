@@ -8,31 +8,32 @@ spec:
     matchLabels:
       app: nats
   template:
-    metadat:
+    metadata:
       labels:
         app: nats
     spec:
       containers:
         - name: nats
-          image: nats-streaming:0.17.0
-          args: [
-            '-p',
-            '4222',
-            '-m',
-            '8222',
-            '-hbi',
-            '5s',
-            '-hbt',
-            '5s',
-            '-hbf',
-            '2',
-            '-SD',
-            '-cid',
-            'ticketing',
-          ]
+          image: nats:latest  # Use the latest NATS server with JetStream built-in
+          args:
+            - "-js"  # Enable JetStream
+            - "-m=8222"  # Monitoring port
+            # Additional JetStream configuration flags can be added here
+          ports:
+            - containerPort: 4222  # Client connection port
+            - containerPort: 8222  # Monitoring port
+          env:
+            - name: JS_STORAGE_DIR
+              value: "/data"  # JetStream storage directory
+          volumeMounts:
+            - name: nats-js-storage
+              mountPath: /data
+      volumes:
+        - name: nats-js-storage
+          emptyDir: {}  # For testing; use persistent storage (e.g., PVC) in production
 ---
 apiVersion: v1
-kind: service
+kind: Service
 metadata:
   name:  nats-srv
 spec:
