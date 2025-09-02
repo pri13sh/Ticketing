@@ -15,7 +15,7 @@ async function start() {
   });
 
   // simple publish (no ack)
-  nc.publish("ticket:created", sc.encode(data));
+  nc.publish("ticket.created", sc.encode(data));
 
   console.log("Event published");
 //   await nc.drain();
