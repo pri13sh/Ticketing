@@ -6,6 +6,7 @@ import {
   RetentionPolicy,
   StorageType,
 } from "nats";
+import { randomBytes } from "crypto";
 
 console.clear();
 
@@ -20,7 +21,8 @@ async function start() {
 
   // Build subscription options (durable = survives restarts, like STAN durable)
   const opts = consumerOpts();
-  opts.durable("ticketing-service");
+  const durableName = `ticketing-service-${randomBytes(4).toString('hex')}`;
+  opts.durable(durableName);
   opts.manualAck(); // manual ack like STAN
   opts.ackExplicit(); // only ack when we say so
   opts.deliverTo("ticket-listener"); // delivery subject (auto inbox if not set)
