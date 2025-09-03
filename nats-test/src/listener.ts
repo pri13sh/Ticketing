@@ -5,13 +5,13 @@ import {
   JetStreamManager,
   RetentionPolicy,
   StorageType,
+  AckPolicy,          // ✅ import AckPolicy
 } from "nats";
-import { randomBytes } from "crypto";
 
 console.clear();
 
 async function start() {
-  await setupStream(); // ✅ await here so stream is ready before subscribing
+  await setupStream(); // wait for stream to exist
 
   const nc = await connect({ servers: "localhost:4222" });
   console.log("Listener connected to NATS (JetStream)");
@@ -19,13 +19,13 @@ async function start() {
   const sc = StringCodec();
   const js = nc.jetstream();
 
-  // Build subscription options (durable = survives restarts, like STAN durable)
+  // ✅ Durable + Queue consumer
   const opts = consumerOpts();
-  const durableName = `ticketing-service-${randomBytes(4).toString('hex')}`;
-  opts.durable(durableName);
-  opts.manualAck(); // manual ack like STAN
-  opts.ackExplicit(); // only ack when we say so
-  opts.deliverTo("ticket-listener"); // delivery subject (auto inbox if not set)
+  opts.durable("ticketing-service");           // persistent durable name
+  opts.manualAck();
+  opts.ackExplicit();                          // explicit ack policy
+  opts.queue("orders-service-queue-group");    // queue group (load balancing)
+  opts.deliverTo("ticket-listener");           // delivery subject
 
   const sub = await js.subscribe("ticket.created", opts);
 
@@ -33,12 +33,12 @@ async function start() {
 
   for await (const m of sub) {
     console.log("📩 Message received:", sc.decode(m.data));
-    m.ack(); // acknowledge (important in JetStream)
+    m.ack(); // acknowledge
   }
 }
 
 async function setupStream() {
-  const nc = await connect({ servers: "localhost:4222" }); // use Service name in K8s
+  const nc = await connect({ servers: "localhost:4222" });
   const jsm: JetStreamManager = await nc.jetstreamManager();
 
   try {
@@ -60,7 +60,7 @@ async function setupStream() {
       console.error("❌ Unknown error creating stream:", err);
     }
   } finally {
-    await nc.close(); // ✅ always close setup connection
+    await nc.close();
   }
 }
 
