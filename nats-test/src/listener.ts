@@ -16,6 +16,21 @@ async function start() {
   const nc = await connect({ servers: "localhost:4222" });
   console.log("Listener connected to NATS (JetStream)");
 
+  (async () => {
+    try {
+      const err = await nc.closed();
+      if (err) {
+        console.error(`NATS closed with an error: ${err.message}`);
+      } else {
+        console.log("NATS connection closed");
+      }
+    } catch (err) {
+      console.error("Error while closing NATS:", err);
+    }
+    process.exit();
+  })();
+
+  
   const sc = StringCodec();
   const js = nc.jetstream();
 
@@ -35,6 +50,17 @@ async function start() {
     console.log("📩 Message received:", sc.decode(m.data));
     m.ack(); // acknowledge
   }
+
+
+  process.on("SIGINT", () => {
+    console.log("Caught SIGINT, closing NATS...");
+    nc.close();
+  });
+
+  process.on("SIGTERM", () => {
+    console.log("Caught SIGTERM, closing NATS...");
+    nc.close();
+  });
 }
 
 async function setupStream() {
