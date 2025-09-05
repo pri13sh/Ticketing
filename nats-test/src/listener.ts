@@ -5,7 +5,7 @@ import {
   JetStreamManager,
   RetentionPolicy,
   StorageType,
-  AckPolicy,          // ✅ import AckPolicy
+  AckPolicy,     
 } from "nats";
 
 console.clear();
@@ -34,7 +34,7 @@ async function start() {
   const sc = StringCodec();
   const js = nc.jetstream();
 
-  // ✅ Durable + Queue consumer
+  // Durable + Queue consumer
   const opts = consumerOpts();
   opts.durable("ticketing-service");           // persistent durable name
   opts.manualAck();
@@ -44,10 +44,10 @@ async function start() {
 
   const sub = await js.subscribe("ticket.created", opts);
 
-  console.log("🚀 Waiting for messages...");
+  console.log("Waiting for messages...");
 
   for await (const m of sub) {
-    console.log("📩 Message received:", sc.decode(m.data));
+    console.log("Message received:", sc.decode(m.data));
     m.ack(); // acknowledge
   }
 
@@ -74,16 +74,16 @@ async function setupStream() {
       retention: RetentionPolicy.Limits,
       storage: StorageType.File,
     });
-    console.log("✅ Stream TICKETS created");
+    console.log("Stream TICKETS created");
   } catch (err) {
     if (err instanceof Error) {
       if (err.message.includes("stream name already in use")) {
-        console.log("ℹ️ Stream TICKETS already exists");
+        console.log("Stream TICKETS already exists");
       } else {
-        console.error("❌ Stream creation error:", err.message);
+        console.error("Stream creation error:", err.message);
       }
     } else {
-      console.error("❌ Unknown error creating stream:", err);
+      console.error("Unknown error creating stream:", err);
     }
   } finally {
     await nc.close();
