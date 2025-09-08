@@ -41,6 +41,7 @@ async function start() {
   opts.ackExplicit();                          // explicit ack policy
   opts.queue("orders-service-queue-group");    // queue group (load balancing)
   opts.deliverTo("ticket-listener");           // delivery subject
+  opts.deliverAll();                           // ✅ replay all available messages
 
   const sub = await js.subscribe("ticket.created", opts);
 
