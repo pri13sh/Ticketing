@@ -1,15 +1,20 @@
 import { Listener } from "../events/base-listener";
-import {
-  JsMsg
-} from "nats";
+import { JsMsg } from "nats";
 
-// Example implementation
-export class TicketCreatedListener extends Listener {
+interface TicketCreatedEvent {
+  id: string;
+  title: string;
+  price: number;
+  userId: string;
+}
+
+export class TicketCreatedListener extends Listener<TicketCreatedEvent> {
   subject = "ticket.created";
   queueGroupName = "payment-service";
+  protected streamName = "TICKETS_STREAM";
 
-  onMessage(data: any, msg: JsMsg) {
+  async onMessage(data: TicketCreatedEvent, msg: JsMsg): Promise<void> {
     console.log("✅ Event data received:", data);
-    msg.ack(); // acknowledge
+    msg.ack();
   }
 }

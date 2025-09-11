@@ -1,7 +1,4 @@
-import {
-  connect,
-  NatsConnection,
-} from "nats";
+import { connect, NatsConnection } from "nats";
 import { TicketCreatedListener } from './events/ticket-created-listener';
 
 // Main startup
@@ -14,6 +11,8 @@ async function start() {
   // create listener instance
   const ticketListener = new TicketCreatedListener(js);
   await ticketListener.listen();
+
+  console.log("✅ Listener is now active and waiting for messages");
 
   // handle close signals
   process.on("SIGINT", () => nc.close());
